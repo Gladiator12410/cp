@@ -86,6 +86,35 @@
             margin-top: 40px;
             color: #333;
         }
+
+        /* Ensure the page scrolls properly */
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: auto; /* Ensure the body can scroll */
+    scroll-behavior: smooth;
+}
+
+/* Adjust the container for previous search results */
+#previousResults {
+    max-height: 80vh; /* Set a maximum height for the container */
+    overflow-y: auto; /* Allow vertical scrolling inside the container */
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+/* Optional: Ensure that large numbers of results are nicely spaced */
+.result-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #eee; /* Make individual items stand out */
+    border-radius: 4px;
+}
+
     </style>
 </head>
 <body>
@@ -225,7 +254,6 @@ function displaySavedUsers() {
     </script>
 </body>
 </html>
-
 
 
 
