@@ -27,6 +27,12 @@
     </div>
 
     <script>
+         // Function to handle the "Enter" key press
+        function handleKey(event) {
+            if (event.key === "Enter") {
+                getUserRatings();
+            }
+        }
         // Function to get user ratings from Codeforces
         function getUserRatings() {
             const usernames = document.getElementById('usernames').value.split(',').map(name => name.trim());
