@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codeforces User Ratings</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333; }
+        .container { width: 50%; margin: 0 auto; text-align: center; padding-top: 50px; }
+        input { padding: 10px; width: 80%; margin-bottom: 20px; }
+        button { padding: 10px 20px; cursor: pointer; }
+        .results, .previous-results { margin-top: 20px; }
+        .result-item { padding: 10px; border-radius: 5px; color: #fff; margin-bottom: 10px; }
+        h2 { margin-top: 40px; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Codeforces User Ratings</h1>
+        <p>Enter Codeforces usernames (comma-separated):</p>
+        <input type="text" id="usernames" placeholder="e.g., tourist, Petr">
+        <button onclick="getUserRatings()">Get Ratings</button>
+        <div class="results" id="results"></div>
+        
+        <h2>Previously Searched Users</h2>
+        <div class="previous-results" id="previousResults"></div>
+    </div>
+
+    <script>
+        // Function to get user ratings from Codeforces
+        function getUserRatings() {
+            const usernames = document.getElementById('usernames').value.split(',').map(name => name.trim());
+            const url = `https://codeforces.com/api/user.info?handles=${usernames.join(';')}`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.innerHTML = ''; // Clear previous results
+                    if (data.status === 'OK') {
+                        data.result.forEach(user => {
+                            const div = document.createElement('div');
+                            div.classList.add('result-item');
+                            div.innerHTML = `<strong>${user.handle}</strong> - Rating: ${user.rating || 'Unrated'}`;
+                            div.style.backgroundColor = getColorForRating(user.rating);
+                            resultsDiv.appendChild(div);
+
+                            // Save user data to local storage
+                            saveUser(user);
+                        });
+                    } else {
+                        resultsDiv.innerHTML = 'Error fetching data';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('results').innerHTML = 'Error fetching data';
+                });
+        }
+
+        // Save user data to local storage
+        function saveUser(user) {
+            let savedUsers = JSON.parse(localStorage.getItem('codeforcesUsers')) || [];
+            const userExists = savedUsers.some(savedUser => savedUser.handle === user.handle);
+            
+            if (!userExists) {
+                savedUsers.push(user);
+                localStorage.setItem('codeforcesUsers', JSON.stringify(savedUsers));
+                displaySavedUsers();
+            }
+        }
+
+        // Display previously searched users
+        function displaySavedUsers() {
+            const savedUsers = JSON.parse(localStorage.getItem('codeforcesUsers')) || [];
+            const previousResultsDiv = document.getElementById('previousResults');
+            previousResultsDiv.innerHTML = ''; // Clear previous results
+
+            savedUsers.forEach(user => {
+                const div = document.createElement('div');
+                div.classList.add('result-item');
+                div.innerHTML = `<strong>${user.handle}</strong> - Rating: ${user.rating || 'Unrated'}`;
+                div.style.backgroundColor = getColorForRating(user.rating);
+                previousResultsDiv.appendChild(div);
+            });
+        }
+
+        // Function to get color based on rating
+        function getColorForRating(rating) {
+            if (rating >= 3000) return '#FF3333'; // Legendary Grandmaster (Bright Red)
+            if (rating >= 2600) return '#FF0000'; // International Grandmaster (Red)
+            if (rating >= 2400) return '#FF0000'; // Grandmaster (Red)
+            if (rating >= 2300) return '#FFCC33'; // International Master (Gold)
+            if (rating >= 2100) return '#FFFF66'; // Master (Yellow)
+            if (rating >= 1900) return '#d400ff'; // Candidate Master (Gray) 6600FF
+            if (rating >= 1600) return '#0004ff'; // Expert (Purple)
+            if (rating >= 1400) return '#00CCFF'; // Specialist (Cyan) 
+            if (rating >= 1200) return '#00FF00'; // Pupil (Green)
+            return '#808080'; // Newbie (Gray)
+        }
+
+        // On page load, display previously searched users
+        window.onload = function() {
+            displaySavedUsers();
+        };
+    </script>
+</body>
+</html>
