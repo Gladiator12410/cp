@@ -5,34 +5,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Codeforces User Ratings</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333; }
-        .container { width: 50%; margin: 0 auto; text-align: center; padding-top: 50px; }
-        input { padding: 10px; width: 80%; margin-bottom: 20px; }
-        button { padding: 10px 20px; cursor: pointer; }
-        .results, .previous-results { margin-top: 20px; }
-        .result-item { padding: 10px; border-radius: 5px; color: #fff; margin-bottom: 10px; }
-        h2 { margin-top: 40px; color: #333; }
+        /* Overall theme styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        p {
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        /* Input field styling */
+        input {
+            width: 80%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #666;
+            box-shadow: 0 0 8px rgba(102, 102, 102, 0.4);
+        }
+
+        /* Button styling */
+        button {
+            background-color: #333;
+            color: #fff;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .results, .previous-results {
+            margin-top: 20px;
+        }
+
+        .result-item {
+            padding: 10px;
+            border-radius: 5px;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin-top: 40px;
+            color: #333;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Codeforces User Ratings</h1>
         <p>Enter Codeforces usernames (comma-separated):</p>
-        <input type="text" id="usernames" placeholder="e.g., tourist, Petr">
+        <input type="text" id="usernames" placeholder="e.g., tourist, Petr" onkeydown="handleKey(event)">
         <button onclick="getUserRatings()">Get Ratings</button>
         <div class="results" id="results"></div>
-        
+
         <h2>Previously Searched Users</h2>
         <div class="previous-results" id="previousResults"></div>
     </div>
 
     <script>
-         // Function to handle the "Enter" key press
+        // Function to focus the input field when the page loads
+        window.onload = function() {
+            document.getElementById('usernames').focus();
+            displaySavedUsers();
+        };
+
+        // Function to handle the "Enter" key press
         function handleKey(event) {
             if (event.key === "Enter") {
                 getUserRatings();
             }
         }
+
         // Function to get user ratings from Codeforces
         function getUserRatings() {
             const usernames = document.getElementById('usernames').value.split(',').map(name => name.trim());
@@ -93,22 +174,21 @@
 
         // Function to get color based on rating
         function getColorForRating(rating) {
-            if (rating >= 3000) return '#FF3333'; // Legendary Grandmaster (Bright Red)
-            if (rating >= 2600) return '#FF0000'; // International Grandmaster (Red)
-            if (rating >= 2400) return '#FF0000'; // Grandmaster (Red)
-            if (rating >= 2300) return '#FFCC33'; // International Master (Gold)
-            if (rating >= 2100) return '#FFFF66'; // Master (Yellow)
-            if (rating >= 1900) return '#d400ff'; // Candidate Master (Gray) 6600FF
-            if (rating >= 1600) return '#0004ff'; // Expert (Purple)
-            if (rating >= 1400) return '#00CCFF'; // Specialist (Cyan) 
-            if (rating >= 1200) return '#00FF00'; // Pupil (Green)
-            return '#808080'; // Newbie (Gray)
-        }
-
-        // On page load, display previously searched users
-        window.onload = function() {
-            displaySavedUsers();
-        };
+        if (rating >= 3000) return '#FF3333'; // Legendary Grandmaster (Bright Red)
+        if (rating >= 2600) return '#FF0000'; // International Grandmaster (Red)
+        if (rating >= 2400) return '#FF0000'; // Grandmaster (Red)
+        if (rating >= 2300) return '#ff8c00'; // International Master (Gold)
+        if (rating >= 2100) return '#ff8c00'; // Master (Yellow)
+        if (rating >= 1900) return '#aa01ab'; // Candidate Master (Gray) 6600FF
+        if (rating >= 1600) return '#0100fe'; // Expert (Purple)
+        if (rating >= 1400) return '#02a89f'; // Specialist (Cyan) 
+        if (rating >= 1200) return '#008101'; // Pupil (Green)
+        return '#818081'; // Newbie (Gray)
+}       
     </script>
 </body>
 </html>
+
+
+
+
