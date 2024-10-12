@@ -157,23 +157,50 @@
             }
         }
 
-       // Display previously searched users in descending order of rating
-        function displaySavedUsers() {
-        const savedUsers = JSON.parse(localStorage.getItem('codeforcesUsers')) || [];
-        const previousResultsDiv = document.getElementById('previousResults');
-            previousResultsDiv.innerHTML = ''; // Clear previous results
+// Function to fetch and update previously searched users' ratings
+function displaySavedUsers() {
+    let savedUsers = JSON.parse(localStorage.getItem('codeforcesUsers')) || [];
+    const previousResultsDiv = document.getElementById('previousResults');
+    previousResultsDiv.innerHTML = ''; // Clear previous results
 
-        // Sort users by rating in descending order (highest rating first)
-        savedUsers.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    // If no saved users, return early
+    if (savedUsers.length === 0) return;
 
-        savedUsers.forEach(user => {
-        const div = document.createElement('div');
-        div.classList.add('result-item');
-        div.innerHTML = `<strong>${user.handle}</strong> - Rating: ${user.rating || 'Unrated'}`;
-        div.style.backgroundColor = getColorForRating(user.rating);
-        previousResultsDiv.appendChild(div);
-    });
+    // Get handles of saved users for the API call
+    const handles = savedUsers.map(user => user.handle).join(';');
+    const url = `https://codeforces.com/api/user.info?handles=${handles}`;
+
+    // Fetch updated user data from Codeforces API
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'OK') {
+                const updatedUsers = data.result;
+
+                // Sort users by rating in descending order (highest rating first)
+                updatedUsers.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+
+                // Update localStorage with the latest ratings
+                localStorage.setItem('codeforcesUsers', JSON.stringify(updatedUsers));
+
+                // Display updated results
+                updatedUsers.forEach(user => {
+                    const div = document.createElement('div');
+                    div.classList.add('result-item');
+                    div.innerHTML = `<strong>${user.handle}</strong> - Rating: ${user.rating || 'Unrated'}`;
+                    div.style.backgroundColor = getColorForRating(user.rating);
+                    previousResultsDiv.appendChild(div);
+                });
+            } else {
+                previousResultsDiv.innerHTML = 'Error fetching updated data from Codeforces.';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching updated ratings:', error);
+            previousResultsDiv.innerHTML = 'Error fetching updated data from Codeforces.';
+        });
 }
+
         // Function to get color based on rating
         function getColorForRating(rating) {
         if (rating >= 3000) return '#FF3333'; // Legendary Grandmaster (Bright Red)
